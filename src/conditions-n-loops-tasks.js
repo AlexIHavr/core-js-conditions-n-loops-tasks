@@ -345,8 +345,25 @@ function getBalanceIndex(arr) {
  *          [10, 9,  8,  7]
  *        ]
  */
-function getSpiralMatrix(/* size */) {
-  throw new Error('Not implemented');
+function getSpiralMatrix(size) {
+  const matrix = [];
+  let [x, y, steps] = [0, 0, size - 1];
+
+  for (let i = 0; i < size; i += 1) matrix[i] = [];
+
+  for (let i = 1; i <= size * size; i += 1) {
+    matrix[y][x] = i;
+
+    if (x === size - steps - 1 && y === steps) steps -= 1;
+
+    if ((x >= y && x < steps) || (y === size - steps - 1 && x === y - 1))
+      x += 1;
+    else if (y <= x && y < steps) y += 1;
+    else if (x <= y && x >= size - steps) x -= 1;
+    else if (y >= x && y >= size - steps) y -= 1;
+  }
+
+  return matrix;
 }
 
 /**
@@ -364,8 +381,15 @@ function getSpiralMatrix(/* size */) {
  *    [7, 8, 9]         [9, 6, 3]
  *  ]                 ]
  */
-function rotateMatrix(/* matrix */) {
-  throw new Error('Not implemented');
+function rotateMatrix(matrix) {
+  const initialMatrix = JSON.parse(JSON.stringify(matrix));
+  const rotatedMatrix = matrix;
+
+  for (let i = 0; i < matrix.length; i += 1) {
+    for (let j = matrix.length - 1, k = 0; j >= 0; j -= 1, k += 1) {
+      rotatedMatrix[i][k] = initialMatrix[j][i];
+    }
+  }
 }
 
 /**
@@ -382,8 +406,62 @@ function rotateMatrix(/* matrix */) {
  *  [2, 9, 5, 9]    => [2, 5, 9, 9]
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
-function sortByAsc(/* arr */) {
-  throw new Error('Not implemented');
+function sortByAsc(arr) {
+  const merge = (arr1, arr2) => {
+    let i = 0;
+    let j = 0;
+
+    const results = [];
+
+    while (i < arr1.length && j < arr2.length) {
+      if (arr2[j] > arr1[i]) {
+        results[results.length] = arr1[i];
+        i += 1;
+      } else {
+        results[results.length] = arr2[j];
+        j += 1;
+      }
+    }
+
+    while (i < arr1.length) {
+      results[results.length] = arr1[i];
+      i += 1;
+    }
+
+    while (j < arr2.length) {
+      results[results.length] = arr2[j];
+      j += 1;
+    }
+
+    return results;
+  };
+
+  if (arr.length <= 1) return arr;
+
+  const mergeSort = (mergedArr) => {
+    if (mergedArr.length <= 1) return mergedArr;
+
+    const mid = Math.floor(mergedArr.length / 2);
+    const left = [];
+    const right = [];
+
+    for (let i = 0, j = 0; i < mergedArr.length; i += 1) {
+      if (i < mid) left[i] = mergedArr[i];
+      else {
+        right[j] = mergedArr[i];
+        j += 1;
+      }
+    }
+
+    return merge(mergeSort(left), mergeSort(right));
+  };
+
+  const sortedArr = mergeSort(arr);
+  const initialArr = arr;
+
+  for (let i = 0; i < sortedArr.length; i += 1) initialArr[i] = sortedArr[i];
+
+  return sortedArr;
 }
 
 /**
@@ -403,8 +481,39 @@ function sortByAsc(/* arr */) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  const hash = {};
+
+  let result = '';
+  let repeatIteration;
+
+  const shuffleOdd = (initialStr) => {
+    let newStr = '';
+
+    for (let i = 0; i < initialStr.length; i += 1) {
+      if (!(i % 2)) newStr += initialStr[i];
+    }
+
+    for (let i = 0; i < initialStr.length; i += 1) {
+      if (i % 2) newStr += initialStr[i];
+    }
+
+    return newStr;
+  };
+
+  for (let i = 0; i < iterations; i += 1) {
+    if (result === str) {
+      repeatIteration = i;
+      break;
+    }
+
+    result = shuffleOdd(result || str);
+    hash[i] = result;
+  }
+
+  return !repeatIteration
+    ? result
+    : hash[(iterations % repeatIteration || repeatIteration) - 1];
 }
 
 /**
@@ -424,8 +533,23 @@ function shuffleChar(/* str, iterations */) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  const sortedDigits = (num) => {
+    const numArr = [];
+    const strNum = String(num);
+
+    for (let i = 0; i < strNum.length; i += 1) numArr[i] = strNum[i];
+
+    return numArr.sort((a, b) => b - a).join('');
+  };
+
+  const max = sortedDigits(number);
+
+  for (let i = number + 1; i <= max; i += 1) {
+    if (max === sortedDigits(i)) return i;
+  }
+
+  return number;
 }
 
 module.exports = {
